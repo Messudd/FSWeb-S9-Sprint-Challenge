@@ -5,7 +5,7 @@ import React, { useState } from "react";
 const initialMessage = "";
 const initialEmail = "";
 const initialSteps = 0;
-const initialIndex = 0; //  "B" nin bulunduğu indexi
+const initialIndex = 4; //  "B" nin bulunduğu indexi
 
 export default function AppFunctional(props) {
   const [steps, setSteps] = useState(initialSteps);
@@ -15,13 +15,13 @@ export default function AppFunctional(props) {
 
   function getXY() {
     return {
-      x: (index%3) + 1 , 
-      y: Math.floor(index/3) + 1
+      x: (index % 3) + 1,
+      y: Math.floor(index / 3) + 1,
     };
   }
 
   function getXYMesaj() {
-    const {x, y} = getXY();
+    const { x, y } = getXY();
     return `Koordinatlar (${x},${y})`;
   }
 
@@ -33,33 +33,29 @@ export default function AppFunctional(props) {
   }
 
   function sonrakiIndex(yon) {
-    if(yon === 'left'){
-      if(index %3 === 0){
-        setIndex(index-1);
-        setSteps(steps+1);
-      }
-      else setMessage('Sola gidemezsiniz');
+    if (yon === "left") {
+      if (index % 3 === 0) {
+        setIndex(index - 1);
+        setSteps(steps + 1);
+      } else setMessage("Sola gidemezsiniz");
     }
-    if(yon === 'right'){
-      if(index %3 === 2){
-        setIndex(index+1);
-        setSteps(steps+1);
-      }
-      else setMessage('Sağa gidemezsiniz');
+    if (yon === "right") {
+      if (index % 3 === 2) {
+        setIndex(index + 1);
+        setSteps(steps + 1);
+      } else setMessage("Sağa gidemezsiniz");
     }
-    if(yon === 'up'){
-      if(index %3 >2 ){
-        setIndex(index-3);
-        setSteps(steps+1);
-      }
-      else setMessage('Yukarıya gidemezsiniz');
+    if (yon === "up") {
+      if (index % 3 > 2) {
+        setIndex(index - 3);
+        setSteps(steps + 1);
+      } else setMessage("Yukarıya gidemezsiniz");
     }
-    if(yon === 'down'){
-      if(index %3 < 6){
-        setIndex(index+3);
-        setSteps(steps+1);
-      }
-      else setMessage('Aşağıya gidemezsiniz');
+    if (yon === "down") {
+      if (index % 3 < 6) {
+        setIndex(index + 3);
+        setSteps(steps + 1);
+      } else setMessage("Aşağıya gidemezsiniz");
     }
   }
 
@@ -71,28 +67,27 @@ export default function AppFunctional(props) {
   function onChange(evt) {
     evt.preventDefault();
     setEmail(evt.target.value);
-    console.log('Email : ',email);
+    console.log("Email : ", email);
   }
 
   function onSubmit(evt) {
     evt.preventDefault();
     const payload = {
-      email : email,
-      steps : steps,
+      email: email,
+      steps: steps,
       ...getXY(),
-    }
-    console.log('payload : ',payload);
+    };
+    console.log("payload : ", payload);
     axios
-    .post(`http://localhost:9000/api/result`,payload)
-    .then((res) => {
-      setMessage(res.data.message);
-      setEmail('');
-      
-    })
-    .catch((err) => {
-      console.log('sunucu- hatası ...', err);
-      setMessage(err);
-    })
+      .post(`http://localhost:9000/api/result`, payload)
+      .then((res) => {
+        setMessage(res.data.message);
+        setEmail("");
+      })
+      .catch((err) => {
+        console.log("sunucu- hatası ...", err);
+        setMessage(err);
+      });
   }
 
   return (
@@ -112,14 +107,30 @@ export default function AppFunctional(props) {
         <h3 id="message">{message}</h3>
       </div>
       <div id="keypad">
-        <button onClick={(e) => sonrakiIndex(e.target.id)} id="left">SOL</button>
-        <button onClick={(e) => sonrakiIndex(e.target.id)} id="up">YUKARI</button>
-        <button onClick={(e) => sonrakiIndex(e.target.id)} id="right">SAĞ</button>
-        <button onClick={(e) => sonrakiIndex(e.target.id)} id="down">AŞAĞI</button>
-        <button id="reset" onClick={reset}>reset</button>
+        <button onClick={(e) => sonrakiIndex(e.target.id)} id="left">
+          SOL
+        </button>
+        <button onClick={(e) => sonrakiIndex(e.target.id)} id="up">
+          YUKARI
+        </button>
+        <button onClick={(e) => sonrakiIndex(e.target.id)} id="right">
+          SAĞ
+        </button>
+        <button onClick={(e) => sonrakiIndex(e.target.id)} id="down">
+          AŞAĞI
+        </button>
+        <button id="reset" onClick={reset}>
+          reset
+        </button>
       </div>
       <form onSubmit={onSubmit}>
-        <input id="email" type="email" placeholder="email girin" value={email} onChange={onChange}></input>
+        <input
+          id="email"
+          type="email"
+          placeholder="email girin"
+          value={email}
+          onChange={onChange}
+        ></input>
         <input id="submit" type="submit"></input>
       </form>
     </div>
