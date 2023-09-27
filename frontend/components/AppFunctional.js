@@ -5,7 +5,7 @@ import React, { useState } from "react";
 const initialMessage = "";
 const initialEmail = "";
 const initialSteps = 0;
-const initialIndex = 4; //  "B" nin bulunduğu indexi
+const initialIndex = 0; //  "B" nin bulunduğu indexi
 
 export default function AppFunctional(props) {
   const [steps, setSteps] = useState(initialSteps);
@@ -14,13 +14,15 @@ export default function AppFunctional(props) {
   const [message, setMessage] = useState(initialMessage);
 
   function getXY() {
-    return `(${(index%3) + 1} , ${Math.floor(index/3) + 1})`;
+    return {
+      x: (index%3) + 1 , 
+      y: Math.floor(index/3) + 1
+    };
   }
 
   function getXYMesaj() {
-    // Kullanıcı için "Koordinatlar (2, 2)" mesajını izlemek için bir state'in olması gerekli değildir.
-    // Koordinatları almak için yukarıdaki "getXY" helperını ve ardından "getXYMesaj"ı kullanabilirsiniz.
-    // tamamen oluşturulmuş stringi döndürür.
+    const {x, y} = getXY();
+    return `Koordinatlar (${x},${y})`;
   }
 
   function reset() {
@@ -36,28 +38,28 @@ export default function AppFunctional(props) {
         setIndex(index-1);
         setSteps(steps+1);
       }
-      else setMessage('sola gidemezsiniz !');
+      else setMessage('Sola gidemezsiniz');
     }
     if(yon === 'right'){
       if(index %3 === 2){
         setIndex(index+1);
         setSteps(steps+1);
       }
-      else setMessage('sağa gidemezsiniz !');
+      else setMessage('Sağa gidemezsiniz');
     }
     if(yon === 'up'){
       if(index %3 >2 ){
         setIndex(index-3);
         setSteps(steps+1);
       }
-      else setMessage('yukarı gidemezsiniz !');
+      else setMessage('Yukarıya gidemezsiniz');
     }
     if(yon === 'down'){
       if(index %3 < 6){
         setIndex(index+3);
         setSteps(steps+1);
       }
-      else setMessage('assagı gidemezsiniz !');
+      else setMessage('Aşağıya gidemezsiniz');
     }
   }
 
@@ -74,22 +76,30 @@ export default function AppFunctional(props) {
 
   function onSubmit(evt) {
     evt.preventDefault();
+    const payload = {
+      email : email,
+      steps : steps,
+      ...getXY(),
+    }
+    console.log('payload : ',payload);
     axios
-    .post(`http://localhost:9000/api/result`,data)
+    .post(`http://localhost:9000/api/result`,payload)
     .then((res) => {
+      setMessage(res.data.message);
+      setEmail('');
       
     })
     .catch((err) => {
       console.log('sunucu- hatası ...', err);
+      setMessage(err);
     })
-
   }
 
   return (
     <div id="wrapper" className={props.className}>
       <div className="info">
-        <h3 id="coordinates">Koordinatlar : {getXY()}</h3>
-        <h3 id="steps">t{steps} kere ilerlediniz</h3>
+        <h3 id="coordinates">{getXYMesaj()}</h3>
+        <h3 id="steps">{steps} kere ilerlediniz</h3>
       </div>
       <div id="grid">
         {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((idx) => (
